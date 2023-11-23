@@ -1,6 +1,7 @@
 <template>
     <el-container class="fullscreen">
         <el-aside>
+            <myNavMenu></myNavMenu>
         </el-aside>
         <el-main class="map">
             <olmap v-if="true" ></olmap>
@@ -10,6 +11,7 @@
 </template>
 
 <script>
+import myNavMenu from './myNavMenu.vue'
 import daohang from './daohang.vue'
 import olmap from './olmap.vue'
 // import cesiummap from './cesiummap.vue'
@@ -20,7 +22,7 @@ export default{
         }
     },
     components:{
-        daohang , olmap, 
+        daohang , olmap, myNavMenu
     },
 
 }

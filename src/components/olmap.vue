@@ -1,5 +1,4 @@
 <template>
-    <div>
         <!-- <el-switch 
             v-for="item in layers"
             lable=""
@@ -10,12 +9,12 @@
             inactive-value="2"
             @change='changelayer($event,item)'>
         </el-switch> -->
-        <el-checkbox v-model="checked" true-label="1" false-label='2' @change="changelayer($event)">备选项</el-checkbox>
+        <!-- <el-checkbox v-model="checked" true-label="1" false-label='2' @change="changelayer($event)">备选项</el-checkbox>
         <button @click="zoomIn">放大</button>
         <button @click="zoomOut">缩小</button>
-        <button @click="moveTo">平移</button>
+        <button @click="moveTo">平移</button> -->
         <!-- <button @click="reset">复位</button> -->
-        <button @click="resetDraw">清除画布</button>
+        <!-- <button @click="resetDraw">清除画布</button>
         <button @click="activeDraw">激活</button>
         <button @click="colseDraw">关闭</button>
         <button @click="delf">删除</button>
@@ -23,33 +22,37 @@
         <button @click="dquery">查询</button>
         <button @click="chafx">查凤翔县</button>
         <button @click="unselect">取消选择</button>
-        <button @click="bufferf">缓冲区分析</button>
+        <button @click="bufferf">缓冲区分析</button> -->
 
 
         <!-- <button @click="bufferf">缓冲区分析</button> -->
 
-        <button @click="xiangjiao">相交</button>
+        <!-- <button @click="xiangjiao">相交</button> -->
 
 
 
 
-        <input type="text" v-model="zoomNum" @blur="zoomnub" placeholder="请输入缩放等级" >
-        <div><input  v-model='mycenterCopy' @blur="flyTocenter" @input="$forceUpdate()"></div>
+        <!-- <input type="text" v-model="zoomNum" @blur="zoomnub" placeholder="请输入缩放等级" >
+        <div><input  v-model='mycenterCopy' @blur="flyTocenter" @input="$forceUpdate()"></div> -->
         <!-- <div><input type="text" v-model="POintX"></div>
         <div><input type="text" v-model="POintY"></div>
         <button @click="addPoint"></button> -->
-
-
-        <div id="map">
+        <div id="map" class="parent">
             <div id="mouseposition">
                 <div id="popup" class="ol-popup" ref="popup" style="background-color: aliceblue;opacity: 0.4;">
                     <span>经度：{{jingdu}}，纬度：{{weidu}}</span>
                 </div>
             </div>
-            
+            <div class="block">
+                <span class="demonstration">切换图层</span>
+                <el-cascader 
+
+                    v-model="valuee"
+                    :options="options"
+                    @change="handleChange"></el-cascader>
+            </div>
         </div>
-        
-    </div>
+
 </template>
 
 <script>
@@ -67,13 +70,51 @@ import { PointLayer,LineLayer,CircleLayer ,SquareLayer,RectangleLayer, PolygonLa
 import {shuxingQuery} from '../api/requests'
 import turf from 'turf'
 import GeoJSON from 'ol/format/GeoJSON'
+
 export default{
     data(){
         return {
+            valuee:[],
+            options: [{
+                value: 'tianditu',
+                label: '天地图地图服务',
+                children:[
+                    {
+                        value:'tdt_img',
+                        label:'天地图卫星影像'
+                    },{
+                        value:'tdt_img_mark',
+                        label:'天地图影像注记图层'
+                    },{
+                        value:'tdt_vec',
+                        label:'天地图矢量图层'
+                    },{
+                        value:'tdt_vec_mark',
+                        label:'天地图矢量注记图层'
+                    }
+                ]
+            },{
+                value:'geoserver',
+                label:'geoserver地图服务',
+                children:[
+                    {
+                        // value:'osm',
+                        // label:'OSM底图'
+                    },
+                ]
+            },{
+                value:'openlayer',
+                label:'openlayer地图服务',
+                children:[
+                    {
+                        value:'osm',
+                        label:'OSM底图'
+                    }],
+            }],
             value:false,
             checked:true,
-            map:null,
-            layers:[tianditu_img_w],
+            map:this.$store.state.openlayer.map,
+            layers:this.$store.state.layers,
             zoomNum:4,
             mycenterCopy:"",
             mycenter:'0,0',
@@ -112,7 +153,7 @@ export default{
             const popupp=popup(this.$refs.popup)
             this.map.addOverlay(popupp)
             this.map.addLayer(wfsLayer)
-
+            console.log(this.$store)
           
 
             // popupp.setPosition([116,40])
@@ -160,6 +201,28 @@ export default{
     },
 
     methods:{
+        handleChange(value) {
+            console.log(this.layers.tdt_img)
+            switch (value[1]){
+                case 'tdt_img' : 
+                    this.map.getLayers().clear();
+                    this.map.addLayer(this.layers.tdt_img)
+                    break;
+                case 'tdt_img_mark' :
+                    this.layers.tdt_img_mark.setZIndex(1)
+                    this.map.addLayer(this.layers.tdt_img_mark)
+                    break;
+
+                case 'tdt_vec' :
+                    this.map.getLayers().clear();
+                    this.map.addLayer(this.layers.tdt_vec)
+                    break;
+                case 'tdt_vec_mark':
+                    this.layers.tdt_vec_mark.setZIndex(1)
+                    this.map.addLayer(this.layers.tdt_vec_mark)
+                // case 5 :
+            }
+      },
         bufferf(){
             const bufferqu=turf.buffer(new GeoJSON().writeFeatureObject(LineLayer.getSource().getFeatures()[0]),500)
             console.log(bufferqu)
@@ -267,102 +330,8 @@ export default{
 
         },
         initMap(){
-             // 地图底图源使用OSM,当然也可以用其他风格的源
-             this.map = new Map({
-                target: 'map',
-                // layers: this.layers,
-                Control: new ZoomToExtent({
-                    extent:[110,20]
-                }),
-                layers:   [new TileLayer({
-                    source: new OSM(),
-                    })],
-            //         new ImageLayer({
-            //     source: new ImageWMS({
-            //         url: "http://localhost:8088/geoserver/ne/wms",//地图服务的连接
-            //         params: {//地图服务中具体的图层
-            //             'LAYERS': "ne:world",//Geoserver中的Openlayers的左边名称
-            //             'version':'1.1.0',
-            //             'exceptions':'application/openlayers',
-            //         },
-            //         serverType: 'geoserver',//设置地图服务器类型
-            //         crossOrigin: 'anonymous',//开启跨域
-            //         ratio: 1,
-                   
-            //     }),
-            // })
+            this.map.setTarget('map')
 
-
-
-
-
-            // const featureRequest = new WFS().writeGetFeature({
-            //     srcName: 'EPSG:4326',
-            //     featureNS: 'http://8.130.73.89:8080/geoserver/tjl_webgis/wfs',
-            //     featureTypes: ['tjl_webgis:point'],
-            //     outputFormat: 'application/json',
-            //     });
-
-            //     // then post the request and add the received features to a layer
-            //     fetch('http://8.130.73.89:8080/geoserver/tjl_webgis/wfs', {
-            //     method: 'POST',
-            //     body: new XMLSerializer().serializeToString(featureRequest),
-            //     })
-            //     .then(function (response) {
-            //         return response.json();
-            //     })
-            //     .then(function (json) {
-            //         const features = new GeoJSON().readFeatures(json);
-            //         vectorSource.addFeatures(features);
-            //         map.getView().fit(vectorSource.getExtent());
-            //     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                view: new View({
-                    center: [114.4,30.6],
-                    zoom: this.zoomNum,
-                    projection: 'EPSG:4326'
-                }),
-                });
-
-                
-                // const zoomToExtent = new zoomToExtent({
-                //     extent:[110,20,120,30]
-                // })
-                // this.map.addControl(zoomToExtent)
       }
 
         }
@@ -372,13 +341,27 @@ export default{
 </script>
 <style scoped>
     #map{
-    position: fixed;
-			left: 0;
+            position: relative;
+            /* overflow: hidden; */
+            /* position: relative; */
 			width: 100%;
-			height: 850px;
+			height: 100vh;
             
             
 }
+/* .parent::after{
+  content: "";
+  display: table;
+  clear: both;
+} */
+.block{
+  position: absolute;
+  top: 4%; /* 也可以使用其他值，如 0, 10px, etc. */
+  right: 2%;
+  /* transform: translate(-50%, -50%); */
+  z-index: 999;
+}
+
 div.ol-scale-line{
     bottom:100px 
 }
