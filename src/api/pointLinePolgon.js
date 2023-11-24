@@ -267,6 +267,8 @@ const RectangleLayer= new VectorLayer({
 
 
 
+
+
 //创建一个画布
 const point_draw_source=new VectorSource({ wrapX:false})
 
@@ -296,12 +298,6 @@ function popup(element){
     })
 
 }
-
-
-
-
-
-
 const wfsSource = new VectorSource({
     format: new GeoJSON({
         geometryName:'gemo'
@@ -309,11 +305,6 @@ const wfsSource = new VectorSource({
     url: function () {
       return (
         'http://localhost:8088/geoserver/test/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3Apoint_test&outputFormat=application%2Fjson'
-
-
-        // 'https://ahocevar.com/geoserver/wfs?service=WFS&' +
-        // 'version=1.1.0&request=GetFeature&typename=osm:water_areas&' +
-        // 'outputFormat=application/json&srsname=EPSG:4326'
       )
     }
 })

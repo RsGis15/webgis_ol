@@ -1,7 +1,7 @@
 import WFS from 'ol/format/WFS';
 import GML from 'ol/format/GML';
 import axios from 'axios'
-
+import store from '../store'
 import Intersects from 'ol/format/filter/Intersects'
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -77,24 +77,20 @@ function specialQuery(source1,geometry) {
         source1.addFeatures(features);
     });
 }
-
-
-
-
-
-
-function shuxingQuery(source1){
-    var url=`http://localhost:8088/geoserver/test/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3Apoint_test&cql_filter=name='凤翔县'&outputFormat=application%2Fjson`
-    fetch(url, {
-        method: 'GET',
-    }).then(function (response) {
-        return response.json();
-    }).then(function (json) {
-        console.log('json', json)
-        var features = new GeoJSON().readFeatures(json);
-        source1.addFeatures(features);
-        // map.getView().fit(source1.getExtent());
-    });
+    function queryByAtt(value){
+        var url=`http://localhost:8088/geoserver/test/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3Apoint_test&cql_filter=name='${value}'&outputFormat=application%2Fjson`
+        console.log(url)
+        fetch(url, {
+            method: 'GET',
+        }).then(function (response) {
+            return response.json();
+        }).then(function (json) {
+            var features = new GeoJSON().readFeatures(json);
+            store.state.querylayer.getSource().addFeatures(features);
+            store.state.openlayer.map.getView().fit(store.state.querylayer.getSource().getExtent(),{maxZoom:9})
+            // map.getView().fit(source1.getExtent());
+        });
+    
 
 
 
@@ -107,4 +103,4 @@ function shuxingQuery(source1){
 
 
 
-export {transact,specialQuery,shuxingQuery}
+export {transact,specialQuery,queryByAtt}

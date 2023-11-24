@@ -46,10 +46,10 @@
             <div class="block">
                 <span class="demonstration">切换图层</span>
                 <el-cascader 
-
                     v-model="valuee"
                     :options="options"
-                    @change="handleChange"></el-cascader>
+                    @change="handleChange">
+                </el-cascader>
             </div>
         </div>
 
@@ -67,7 +67,7 @@ import ZoomToExtent from 'ol/control/ZoomToExtent'
 import { tianditu_img_w,  tianditu_cia_w, tianditu_vec_w, tianditu_cva_w } from '../api/tianditu'
 import {zoomToExtent,zoomSlider,mousePosition,scaleline,overviewmap} from '../api/controls'
 import { PointLayer,LineLayer,CircleLayer ,SquareLayer,RectangleLayer, PolygonLayer,point_draw_layer,point_draw,popup,wfsLayer,select,s_modify,modify,drawquery,vector1,wfsSource,source1,polygonSource,xuanran,xuanranbuffer} from '../api/pointLinePolgon'
-import {shuxingQuery} from '../api/requests'
+import {queryByAtt} from '../api/requests'
 import turf from 'turf'
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -98,8 +98,8 @@ export default{
                 label:'geoserver地图服务',
                 children:[
                     {
-                        // value:'osm',
-                        // label:'OSM底图'
+                        value:'wfs_point',
+                        label:'全国县级驻地矢量点'
                     },
                 ]
             },{
@@ -142,20 +142,14 @@ export default{
             this.map.addControl(zoomSlider)
             this.map.addControl(mousePosition)
             this.map.addControl(overviewmap)
-            this.map.addLayer(PointLayer)
-            this.map.addLayer(LineLayer)
-            this.map.addLayer(CircleLayer)
-            this.map.addLayer(SquareLayer)
-            this.map.addLayer(RectangleLayer)
-            this.map.addLayer(PolygonLayer)
+
             this.map.addLayer(vector1)
             this.map.addLayer(point_draw_layer)
             const popupp=popup(this.$refs.popup)
             this.map.addOverlay(popupp)
-            this.map.addLayer(wfsLayer)
-            console.log(this.$store)
-          
-
+            // this.map.addLayer(wfsLayer)
+            this.map.addLayer(this.$store.state.querylayer)
+            this.map.addLayer(this.$store.state.drawlayer.drawLayer)
             // popupp.setPosition([116,40])
             // this.map.on()
             // this.map.addInteraction((point_draw))
@@ -189,18 +183,13 @@ export default{
 
 
         })
-        // setTimeout(() => {   
-        //     this.initMap()
-        //     this.map.addControl(scaleline)
-        //     this.map.addControl(zoomToExtent)
-        //     this.map.addControl(zoomSlider)
-        //     this.map.addControl(mousePosition)
-        //     this.map.addControl(overviewmap)
-        // }, 100); 
 
     },
 
     methods:{
+        initMap(){
+            this.map.setTarget('map')
+        },
         handleChange(value) {
             console.log(this.layers.tdt_img)
             switch (value[1]){
@@ -220,7 +209,12 @@ export default{
                 case 'tdt_vec_mark':
                     this.layers.tdt_vec_mark.setZIndex(1)
                     this.map.addLayer(this.layers.tdt_vec_mark)
-                // case 5 :
+                    break;
+                case 'wfs_point' :
+                    this.layers.wfs_point.setZIndex(1)
+                    this.layers.wfs_point.setStyle(this.$store.state.style.pointstyle)
+                    this.map.addLayer(this.layers.wfs_point)
+                    break;
             }
       },
         bufferf(){
@@ -329,10 +323,7 @@ export default{
             this.map.removeLayer(tianditu_cia_w)
 
         },
-        initMap(){
-            this.map.setTarget('map')
-
-      }
+     
 
         }
     }
@@ -340,28 +331,17 @@ export default{
 
 </script>
 <style scoped>
-    #map{
-            position: relative;
-            /* overflow: hidden; */
-            /* position: relative; */
-			width: 100%;
-			height: 100vh;
-            
-            
+#map{
+    position: relative;
+    width: 100%;
+    height: 100vh;      
 }
-/* .parent::after{
-  content: "";
-  display: table;
-  clear: both;
-} */
 .block{
-  position: absolute;
-  top: 4%; /* 也可以使用其他值，如 0, 10px, etc. */
-  right: 2%;
-  /* transform: translate(-50%, -50%); */
-  z-index: 999;
+    position: absolute;
+    top: 4%; /* 也可以使用其他值，如 0, 10px, etc. */
+    right: 2%;
+    z-index: 999;
 }
-
 div.ol-scale-line{
     bottom:100px 
 }
