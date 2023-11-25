@@ -64,8 +64,9 @@ export function drawInteractive(type){
 }
 }
 
-export function queryBydraw(type){
+    const queryBydraw=async function (type){
     store.state.drawlayer.drawLayer.setSource(store.state.drawlayer.source)
+    let selectData=null
     switch(type){
         case 'Point':
             const pointDraw = new Draw({type:'Point',source:store.state.drawlayer.source})
@@ -86,15 +87,22 @@ export function queryBydraw(type){
         case 'Polygon':
             const polygonDraw = new Draw({type:'Polygon',source:store.state.drawlayer.source})
             store.state.openlayer.map.addInteraction(polygonDraw)
-            polygonDraw.on("drawend", function (evt) {
-                store.state.drawlayer.source.clear();
-                var feature = evt.feature;
-                var inputGeometry = feature.getGeometry();
-                specialQuery(inputGeometry);
-                console.log(store.state.drawlayer.source)
+            await new Promise((resolve)=>{
+                polygonDraw.on("drawend", async function (evt) {
+                    store.state.drawlayer.source.clear();
+                    var feature = evt.feature;
+                    var inputGeometry = feature.getGeometry();
+                    const data= await specialQuery(inputGeometry);
+                    console.log(data,111)
+                    selectData=data
+                    resolve();
+            })
             });
-
-
             break;
+        }
+        return selectData;
+
+            
+
 }
-}
+export { queryBydraw}

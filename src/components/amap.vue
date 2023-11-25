@@ -5,6 +5,7 @@
         </el-aside>
         <el-main class="map">
             <olmap v-if="true" ></olmap>
+            <mytable v-if="mytableOk"></mytable> 
         </el-main>
     </el-container>
 
@@ -14,15 +15,21 @@
 import myNavMenu from './myNavMenu.vue'
 import daohang from './daohang.vue'
 import olmap from './olmap.vue'
+import mytable from './mytable.vue'
 // import cesiummap from './cesiummap.vue'
 export default{
     data(){
         return {
-            // ol:
+
+        }
+    },
+    computed:{
+        mytableOk(){
+        return   this.$store.state.mytableOk
         }
     },
     components:{
-        daohang , olmap, myNavMenu
+        daohang , olmap, myNavMenu , mytable 
     },
 
 }

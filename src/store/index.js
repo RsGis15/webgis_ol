@@ -110,7 +110,9 @@ export default new Vuex.Store({
             //         color:'red'
             //     })
             // })
-        })
+        }),
+        queryproper:null,
+        mytableOk:false
         
 } ,
     mutations:{},

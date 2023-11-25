@@ -106,7 +106,13 @@ import {queryByAtt} from '../api/requests'
                 })
             },
         queryByZoon(type){
-            queryBydraw(type)
+            queryBydraw(type).then((result)=>{
+                // console.log(result[0])
+                this.$store.state.mytableOk=true
+                // console.log(result[0].getProperties().name)
+               
+        
+            })
         },
       drawinter(type){
         // this.$store.state.openlayer.map.addLayer(this.$store.state.drawlayer.drawLayer)

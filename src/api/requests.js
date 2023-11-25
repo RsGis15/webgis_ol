@@ -47,8 +47,9 @@ function transact(feature, layerName) {
     //     });
 
   }
-function specialQuery(geometry) {
+const specialQuery=async function(geometry) {
     // 拼接查询参数
+    let data=[]
     var featureRequest = new WFS().writeGetFeature({
         srsName: 'EPSG:4326',
         featureNS: 'http://localhost/test', //命名空间
@@ -59,22 +60,25 @@ function specialQuery(geometry) {
         filter: new Intersects('geom', geometry)
     });
     console.log(featureRequest)
-    fetch('http://localhost:8088/geoserver/wfs', {
+     const response = await fetch('http://localhost:8088/geoserver/wfs', {
         method: 'POST',
         body: new XMLSerializer().serializeToString(featureRequest)
     }).then(response=> {
-        console.log(response)
         const jsonn=response.json()
-        console.log(jsonn)
         return jsonn
     }
-        // console.log(response)
-        // console.log(response.json());
     ).then(jsonn=> {
         console.log(jsonn)
-        // 从geojson数据生成feature
         var features = new GeoJSON().readFeatures(jsonn);
         store.state.drawlayer.source.addFeatures(features);
+        data=features
+        let dddd=[]
+        data.forEach(item=>{
+            dddd.push(item.getProperties())
+            // console.log(item.getProperties())
+        })
+        store.state.queryproper=dddd
+        return data
     });
 }
     function queryByAtt(value){
