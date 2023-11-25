@@ -83,7 +83,7 @@ export default new Vuex.Store({
         drawlayer:{
             source:new VectorSource({}),
             drawLayer:new VectorLayer({
-                zIndex:999
+                zIndex:2
             }),
         },
         style:{

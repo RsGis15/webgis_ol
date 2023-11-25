@@ -47,7 +47,7 @@ function transact(feature, layerName) {
     //     });
 
   }
-function specialQuery(source1,geometry) {
+function specialQuery(geometry) {
     // 拼接查询参数
     var featureRequest = new WFS().writeGetFeature({
         srsName: 'EPSG:4326',
@@ -74,7 +74,7 @@ function specialQuery(source1,geometry) {
         console.log(jsonn)
         // 从geojson数据生成feature
         var features = new GeoJSON().readFeatures(jsonn);
-        source1.addFeatures(features);
+        store.state.drawlayer.source.addFeatures(features);
     });
 }
     function queryByAtt(value){

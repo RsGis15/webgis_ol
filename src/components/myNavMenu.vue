@@ -67,8 +67,8 @@
             <el-submenu index="3-2"> 
                 <span slot="title">查询所选区域</span>
                 <el-menu-item index="3-2-1" @click="queryByZoon('Circle')">圆查询</el-menu-item>
-                <el-menu-item index="3-2-2" @click="queryByZoon('Circle')">矩形查询</el-menu-item>
-                <el-menu-item index="3-2-3" @click="queryByZoon('Circle')">多边形查询</el-menu-item>
+                <!-- <el-menu-item index="3-2-2" @click="queryByZoon('Circle')">矩形查询</el-menu-item> -->
+                <el-menu-item index="3-2-3" @click="queryByZoon('Polygon')">多边形查询</el-menu-item>
             </el-submenu>
         </el-submenu>
     </el-menu>
@@ -76,7 +76,7 @@
 </template>   
    
 <script>
-import {drawByPostion ,drawInteractive} from '../api/draw'
+import {drawByPostion ,drawInteractive,queryBydraw} from '../api/draw'
 import Draw from 'ol/interaction/Draw'
 import {queryByAtt} from '../api/requests'
     export default {
@@ -105,8 +105,8 @@ import {queryByAtt} from '../api/requests'
                     queryByAtt(value)
                 })
             },
-        queryByZoon(){
-            specialQuery(source1,geometry)
+        queryByZoon(type){
+            queryBydraw(type)
         },
       drawinter(type){
         // this.$store.state.openlayer.map.addLayer(this.$store.state.drawlayer.drawLayer)

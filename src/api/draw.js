@@ -6,6 +6,7 @@ import VectorLayer from 'ol/layer/Vector'
 import Style from 'ol/style'
 import Draw from 'ol/interaction/Draw'
 import {createBox} from 'ol/interaction/Draw';
+import {specialQuery} from './requests'
 /**
     *根据坐标点绘制点、线、多边形、圆  
     * @type
@@ -61,5 +62,39 @@ export function drawInteractive(type){
             store.state.openlayer.map.addInteraction(polygonDraw)
             break;
 }
+}
 
+export function queryBydraw(type){
+    store.state.drawlayer.drawLayer.setSource(store.state.drawlayer.source)
+    switch(type){
+        case 'Point':
+            const pointDraw = new Draw({type:'Point',source:store.state.drawlayer.source})
+            store.state.openlayer.map.addInteraction(pointDraw)
+            break;  
+        case 'LineString':
+            const lineDraw = new Draw({type:'LineString',source:store.state.drawlayer.source})
+            store.state.openlayer.map.addInteraction(lineDraw)
+            break;
+        case 'Circle':
+            const circleDraw = new Draw({type:'Circle',source:store.state.drawlayer.source})
+            store.state.openlayer.map.addInteraction(circleDraw)
+            break;
+        case 'Square':
+            const squareDraw = new Draw({type:'Circle',geometryFunction:createBox(),source:store.state.drawlayer.source})
+            store.state.openlayer.map.addInteraction(squareDraw)
+            break;
+        case 'Polygon':
+            const polygonDraw = new Draw({type:'Polygon',source:store.state.drawlayer.source})
+            store.state.openlayer.map.addInteraction(polygonDraw)
+            polygonDraw.on("drawend", function (evt) {
+                store.state.drawlayer.source.clear();
+                var feature = evt.feature;
+                var inputGeometry = feature.getGeometry();
+                specialQuery(inputGeometry);
+                console.log(store.state.drawlayer.source)
+            });
+
+
+            break;
+}
 }
