@@ -51,6 +51,7 @@
                     @change="handleChange">
                 </el-cascader>
             </div>
+            <el-button @click="cleardraw" class="btn">清空绘制图层</el-button>
         </div>
 
 </template>
@@ -70,6 +71,7 @@ import { PointLayer,LineLayer,CircleLayer ,SquareLayer,RectangleLayer, PolygonLa
 import {queryByAtt} from '../api/requests'
 import turf from 'turf'
 import GeoJSON from 'ol/format/GeoJSON'
+import VectorSource from 'ol/source/Vector';
 
 export default{
     data(){
@@ -217,6 +219,9 @@ export default{
                     break;
             }
       },
+      cleardraw(){
+        this.$store.state.drawlayer.drawLayer.getSource().clear()
+      },
         bufferf(){
             const bufferqu=turf.buffer(new GeoJSON().writeFeatureObject(LineLayer.getSource().getFeatures()[0]),500)
             console.log(bufferqu)
@@ -340,6 +345,12 @@ export default{
     position: absolute;
     top: 4%; /* 也可以使用其他值，如 0, 10px, etc. */
     right: 2%;
+    z-index: 999;
+}
+.btn{
+    position: absolute;
+    top: 4%; /* 也可以使用其他值，如 0, 10px, etc. */
+    right: 18%;
     z-index: 999;
 }
 div.ol-scale-line{

@@ -61,6 +61,7 @@
             </template>
             <!-- <el-submenu index="1-4">
                 <span slot="title">绘制点</span> -->
+                
                 <el-menu-item index="3-1">按属性查询</el-menu-item>
                 <!-- <el-menu-item index="1-4-1">查询所选区域</el-menu-item> -->
             <!-- </el-submenu> -->
@@ -70,6 +71,7 @@
                 <!-- <el-menu-item index="3-2-2" @click="queryByZoon('Circle')">矩形查询</el-menu-item> -->
                 <el-menu-item index="3-2-3" @click="queryByZoon('Polygon')">多边形查询</el-menu-item>
             </el-submenu>
+            <el-menu-item index="3-3" @click="closeInter">查询取消</el-menu-item>
         </el-submenu>
     </el-menu>
     </div>    
@@ -110,8 +112,6 @@ import {queryByAtt} from '../api/requests'
                 // console.log(result[0])
                 this.$store.state.mytableOk=true
                 // console.log(result[0].getProperties().name)
-               
-        
             })
         },
       drawinter(type){

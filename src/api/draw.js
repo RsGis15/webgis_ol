@@ -101,8 +101,5 @@ export function drawInteractive(type){
             break;
         }
         return selectData;
-
-            
-
 }
 export { queryBydraw}
